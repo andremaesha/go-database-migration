@@ -18,7 +18,7 @@ func TestConnectToDB(t *testing.T) {
 
 func TestAddFirst(t *testing.T) {
 	category := domain.Category{
-		Name: "test golang",
+		Name: "test golang hihi",
 	}
 
 	db := configs.NewDB()
@@ -51,15 +51,24 @@ func TestAddTxFirst(t *testing.T) {
 
 func TestQueryFirst(t *testing.T) {
 	category := domain.Category{Name: "andre"}
+	film := domain.Film{}
 
 	db := configs.NewDB()
-	datas := make(map[string]interface{})
-	err := db.Table("first").Select("id,name").Find(datas).Scan(&category).Error
+	//datas := make(map[string]interface{})
+	//datasFilm := make(map[string]interface{})
+
+	//err := db.Table("first").Select("id,name").Find(datas).Scan(&category).Error
+	//if err != nil {
+	//	panic(err)
+	//}
+
+	err := db.Table("film").Select("film_id,title,description,release_year,fulltext").First(&film).Error
 	if err != nil {
 		panic(err)
 	}
 
 	fmt.Println(category)
+	fmt.Println(film)
 }
 
 func TestQueryAllFIrst(t *testing.T) {

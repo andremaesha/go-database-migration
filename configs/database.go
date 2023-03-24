@@ -1,24 +1,26 @@
 package configs
 
 import (
+	"database-migration/models/domain"
 	"fmt"
+	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+	"gorm.io/plugin/dbresolver"
 	"log"
 	"os"
 	"time"
 )
 
-func NewDB() *gorm.DB {
+func dsn(dbName string) string {
 	host := "localhost"
 	user := "postgres"
 	password := "root"
-	dbName := "belajar_golang_restful_api"
 	port := "5432"
 	sslmode := "disable"
 	timeZone := "UTC"
-	dsn := fmt.Sprintf(
+	dsnResult := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
 		host,
 		user,
@@ -29,9 +31,13 @@ func NewDB() *gorm.DB {
 		timeZone,
 	)
 
-	file, err2 := os.Create("gorm-log.txt")
-	if err2 != nil {
-		panic(err2)
+	return dsnResult
+}
+
+func NewDB() *gorm.DB {
+	file, err := os.Create("gorm-log.txt")
+	if err != nil {
+		panic(err)
 	}
 
 	newLogger := logger.New(
@@ -44,9 +50,24 @@ func NewDB() *gorm.DB {
 		},
 	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+	db, err := gorm.Open(postgres.Open(dsn("belajar_golang_restful_api")), &gorm.Config{
 		Logger: newLogger,
 	})
+
+	err = db.Use(
+		dbresolver.
+			Register(
+				dbresolver.Config{
+					Sources: []gorm.Dialector{postgres.Open(dsn("dvdrental"))},
+				},
+				"film", &domain.Film{}, "secondary",
+			).
+			Register(
+				dbresolver.Config{},
+			).
+			SetMaxIdleConns(10).
+			SetMaxOpenConns(100),
+	)
 	if err != nil {
 		panic(err)
 	}

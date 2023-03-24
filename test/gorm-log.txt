@@ -1,0 +1,2 @@
+2023/03/24 13:05:47 D:/development/golang/pzn/database-migration/test/film_test.go:16
+[121.989ms] [rows:1] SELECT * FROM "film" WHERE "film"."film_id" = 133 ORDER BY "film"."film_id" LIMIT 1

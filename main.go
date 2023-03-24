@@ -11,11 +11,19 @@ import (
 func main() {
 	db := configs.NewDB()
 	engine := gin.Default()
+
 	categoryRepository := repository.NewCategoryRepositoryImpl()
 	categoryService := service.NewCategoryServiceImpl(db, categoryRepository)
 	categoryController := controllers.NewCategoryControllerImpl(engine, categoryService)
 
-	router := configs.NewRouter(categoryController)
+	filmRepository := repository.NewFilmRepositoryImpl()
+	filmService := service.NewFilmServiceImpl(db, filmRepository)
+
+	services := service.NewServiceImpl(db, filmRepository, categoryRepository)
+
+	filmController := controllers.NewFilmControllerImpl(engine, filmService, services)
+
+	router := configs.NewRouter(categoryController, filmController)
 
 	err := router.Run(":8080")
 	if err != nil {
