@@ -1,7 +1,6 @@
 package configs
 
 import (
-	"database-migration/models/domain"
 	"fmt"
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
@@ -60,10 +59,8 @@ func NewDB() *gorm.DB {
 				dbresolver.Config{
 					Sources: []gorm.Dialector{postgres.Open(dsn("dvdrental"))},
 				},
-				"film", &domain.Film{}, "secondary",
-			).
-			Register(
-				dbresolver.Config{},
+				//"film", &domain.Film{}, "secondary",
+				"film", "actor",
 			).
 			SetMaxIdleConns(10).
 			SetMaxOpenConns(100),
